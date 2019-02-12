@@ -1,0 +1,283 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation Sample Template S3_Website_With_CloudFront_Distribution:
+  Sample template showing how to create a website with a custom DNS name, hosted
+  on Amazon S3 and served via Amazone CloudFront. It assumes you already have a
+  Hosted Zone registered with Amazon Route 53. **WARNING** This template creates
+  an Amazon Route 53 DNS record, an S3 bucket and a CloudFront distribution. You
+  will be billed for the AWS resources used if you create a stack from this
+  template.
+
+
+Parameters:
+  HostedZone:
+    Type: String
+    Description: The DNS name of an existing Amazon Route 53 hosted zone
+    AllowedPattern: '(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)'
+    ConstraintDescription: must be a valid DNS zone name.
+    Default: 'plantondemand.com'
+
+  Domain:
+    Type: String
+    Default: 'plantondemand.com'
+
+  AcmCertificateArn:
+    Type: String
+    Description: >
+      The ARN of the SSL certificate to use for the CloudFront distribution.
+    Default: arn:aws:acm:us-east-1:882278212386:certificate/c9e7dc87-9d9e-4429-b2bc-5da53e936f45
+
+  # ElasticBeanstalkDomainName: 
+  #   Description: "The domain name of the app"
+  #   Type: String
+  #   Default: 'stagingapi.plantondemand.com'
+  #   ConstraintDescription: "POD staging API"
+
+
+Mappings:
+  Region2S3WebsiteSuffix:
+    us-east-1:
+      Suffix: .s3-website-us-east-1.amazonaws.com
+    us-west-1:
+      Suffix: .s3-website-us-west-1.amazonaws.com
+    us-west-2:
+      Suffix: .s3-website-us-west-2.amazonaws.com
+    eu-west-1:
+      Suffix: .s3-website-eu-west-1.amazonaws.com
+    eu-west-2:
+      Suffix: .s3-website-eu-west-2.amazonaws.com
+    eu-west-3:
+      Suffix: .s3-website-eu-west-3.amazonaws.com
+    ap-northeast-1:
+      Suffix: .s3-website-ap-northeast-1.amazonaws.com
+    ap-northeast-2:
+      Suffix: .s3-website-ap-northeast-2.amazonaws.com
+    ap-northeast-3:
+      Suffix: .s3-website-ap-northeast-3.amazonaws.com
+    ap-southeast-1:
+      Suffix: .s3-website-ap-southeast-1.amazonaws.com
+    ap-southeast-2:
+      Suffix: .s3-website-ap-southeast-2.amazonaws.com
+    ap-south-1:
+      Suffix: .s3-website-ap-south-1.amazonaws.com
+    us-east-2:
+      Suffix: .s3-website-us-east-2.amazonaws.com
+    ca-central-1:
+      Suffix: .s3-website-ca-central-1.amazonaws.com
+    sa-east-1:
+      Suffix: .s3-website-sa-east-1.amazonaws.com
+    cn-north-1:
+      Suffix: .s3-website.cn-north-1.amazonaws.com.cn
+    cn-northwest-1:
+      Suffix: .s3-website.cn-northwest-1.amazonaws.com.cn
+    eu-central-1:
+      Suffix: .s3-website-eu-central-1.amazonaws.com
+
+  Beanstalk2Route53HostedZoneId: 
+    "us-east-1": 
+     HostedZoneId: Z3DZXE0Q79N41H
+    "us-west-1": 
+     HostedZoneId: Z1M58G0W56PQJA
+    "us-west-2": 
+     HostedZoneId: Z33MTJ483KN6FU
+    "eu-west-1": 
+     HostedZoneId: Z3NF1Z3NOM5OY2
+    "ap-northeast-1": 
+     HostedZoneId: Z2YN17T5R711GT
+    "ap-southeast-1": 
+     HostedZoneId: Z1WI8VXHPB1R38
+    "sa-east-1": 
+     HostedZoneId: Z2ES78Y61JGQKS
+
+
+Resources:
+
+  ElasticBeanstalkApp:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      ApplicationVersions:
+        - Description: Version 1.0
+          VersionLabel: Initial Version
+      Description: AWS Elastic Beanstalk Python Application
+
+
+  ElasticBeanstalkEnv:
+    Type: 'AWS::ElasticBeanstalk::Environment'
+    Properties:
+      ApplicationName: !Ref ElasticBeanstalkApp
+      Description: "API flask LGE"
+      EnvironmentName: lge-elb
+      SolutionStackName: "64bit Amazon Linux 2018.03 v2.8.0 running Python 2.7"
+
+  S3BucketVue:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+
+  S3BucketVuePolicies:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties: 
+      Bucket: !Ref S3BucketVue
+      PolicyDocument: 
+        Statement: 
+          - 
+            Action: 
+              - "s3:GetObject"
+            Effect: "Allow"
+            Resource: 
+              Fn::Join: 
+                - ""
+                - 
+                  - "arn:aws:s3:::"
+                  - !Ref S3BucketVue
+                  - "/*"
+            Principal: "*"
+
+  WebsiteCDN:
+    Type: 'AWS::CloudFront::Distribution'
+    Properties:
+      DistributionConfig:
+        Comment: CDN for S3-backed webapp
+        Aliases: 
+          - 'lge.plantondemand.com'
+        Enabled: 'true'
+        DefaultCacheBehavior:
+          ForwardedValues:
+            QueryString: 'true'
+          TargetOriginId: only-origin
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Origins:
+          - CustomOriginConfig:
+              HTTPPort: '80'
+              HTTPSPort: '443'
+              OriginProtocolPolicy: http-only
+            DomainName: !Join 
+              - ''
+              - - !Ref S3BucketVue
+                - !FindInMap 
+                  - Region2S3WebsiteSuffix
+                  - !Ref 'AWS::Region'
+                  - Suffix
+            Id: only-origin
+        ViewerCertificate: 
+          AcmCertificateArn: !Ref AcmCertificateArn
+          SslSupportMethod: sni-only
+
+      # ####### ROUTE53
+
+  # ElasticBeanstalkHostedZone: 
+  #   Type: "AWS::Route53::HostedZone"
+  #   Properties: 
+  #     Name: !Ref Domain
+
+
+  ElasticBeanstalkRecordSet: 
+    Type: "AWS::Route53::RecordSet"
+    Properties: 
+     AliasTarget: 
+      DNSName: !GetAtt ElasticBeanstalkEnv.EndpointURL
+      HostedZoneId: !FindInMap 
+        - Beanstalk2Route53HostedZoneId
+        - !Ref AWS::Region 
+        - HostedZoneId
+     # HostedZoneId: !Ref ElasticBeanstalkHostedZone
+     HostedZoneName: !Join
+        - ''
+        - - !Ref Domain
+          - .
+     Name: lgeapi.plantondemand.com
+     Type: A
+
+  # ElasticBeanstalkDNSName:
+  #   Type: 'AWS::Route53::RecordSet'
+  #   Properties:
+  #     AliasTarget:
+  #       DNSName: pod-staging-api.eu-west-1.elasticbeanstalk.com.
+  #       HostedZoneId: Z2NYPWQ7DFZAZH
+  #     HostedZoneName: !Join
+  #       - ''
+  #       - - !Ref Domain
+  #         - .
+  #     Comment: A redirect custom name to ElasticBeanstalk
+  #     Name: !Ref ElasticBeanstalkDomainName
+  #     Type: A
+
+
+  VueDNSName:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt WebsiteCDN.DomainName
+        # HostedZoneId: !GetAtt WebsiteCDN.CanonicalHostedZoneNameID
+        HostedZoneId: Z2FDTNDATAQYW2
+      HostedZoneName: !Join
+        - ''
+        - - !Ref Domain
+          - .
+      Comment: A redirect custom name to Vue
+      Name: lge.plantondemand.com
+      Type: A
+
+  # myDNS:
+  #   Type: AWS::Route53::RecordSetGroup
+  #   Properties:
+  #     HostedZoneId:
+  #       Ref: !GetAtt WebsiteCDN.CanonicalHostedZoneNameID
+  #     RecordSets:
+  #     - Name:
+  #         Ref: stagingapp1.plantondemand.com
+  #       Type: A
+  #       AliasTarget:
+  #         HostedZoneId: !GetAtt WebsiteCDN.CanonicalHostedZoneNameID
+  #         DNSName:
+  #           Ref: !GetAtt WebsiteCDN.DomainName
+
+  WebsiteDNSName:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneName: !Join
+        - ''
+        - - !Ref Domain
+          - .
+      Comment: CNAME redirect custom name to CloudFront distribution
+      Name: !Join 
+        - ''
+        - - !Ref 'AWS::StackName'
+          - !Ref 'AWS::AccountId'
+          - .
+          - !Ref 'AWS::Region'
+          - .
+          - !Ref Domain
+      Type: CNAME
+      TTL: '900'
+      ResourceRecords:
+        - !Join 
+          - ''
+          - - 'http://'
+            - !GetAtt 
+              - WebsiteCDN
+              - DomainName
+
+Outputs:
+  URL:
+    Description: "URL of the AWS Elastic Beanstalk Environment"
+    # Value: !Join [ "", [ "http://", Fn::GetAtt: [ElasticBeanstalkEnv, EndpointURL]  ] ]
+    Value:
+      !Join
+        - ''
+        - - "http://"
+          - !GetAtt ElasticBeanstalkEnv.EndpointURL
+
+  WebsiteURL:
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !Ref WebsiteDNSName
+    Description: The URL of the app frontend
+  BucketName:
+    Value: !Ref S3BucketVue
+    Description: Frontend Webapp POD
