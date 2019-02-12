@@ -125,7 +125,10 @@ yarn-error.log*
 *.sln
 *.pyc
 
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml
+
+# PLUS EBIGNORE
+flask/
+docker/
+frontend/
+cloudformation/
+README.md/
