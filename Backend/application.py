@@ -155,27 +155,24 @@ def uploadTypeFresco():
     sales_physical = path + '/Productos_por_proveedor_tienda.csv'
     fresco_1 = path + '/FRESCO_1.xlsx'
     fresco_2 = path + '/FRESCO_2.xlsx'
-    zipToDelete = UPLOAD_FOLDER + '/Pedidos_fresco.zip'
+    zipToDeleteViernes = UPLOAD_FOLDER + '/Pedidos_fresco_viernes.zip'
+    zipToDeleteLunes = UPLOAD_FOLDER + '/Pedidos_fresco_lunes.zip'
     print 'UPLOAD OK'
-    print type(typePedido)
-    print zipToDelete
+    print typePedido
 
-    if os.path.exists(zipToDelete):
-        os.remove(zipToDelete)
+    if os.path.exists(zipToDeleteViernes):
+        os.remove(zipToDeleteViernes)
+    if os.path.exists(zipToDeleteLunes):
+        os.remove(zipToDeleteLunes)
 
     if typePedido == '1':
         print 'Viernes OK'
-        print datos_para_balanza
-        print os.path.exists(datos_para_balanza)
-        print sales_online
-        print os.path.exists(sales_online)
-        print sales_physical
-        print os.path.exists(sales_physical)
+        filename = 'Pedidos_fresco_viernes.zip'
         if os.path.exists(datos_para_balanza) and os.path.exists(sales_online) and os.path.exists(sales_physical):
             print 'Files OK'
             lunes = False;
             app_pedidos_fresco(lunes, path)
-            zip_path = os.path.join(UPLOAD_FOLDER_PEDIDOS_FRESCO, '../Pedidos_fresco.zip')
+            zip_path = os.path.join(UPLOAD_FOLDER_PEDIDOS_FRESCO, '../', filename)
             zipf = zipfile.ZipFile(zip_path,'w', zipfile.ZIP_DEFLATED)
             for root,dirs, files in os.walk(UPLOAD_FOLDER_PEDIDOS_FRESCO):
                 for file in files:
@@ -185,10 +182,12 @@ def uploadTypeFresco():
             zipf.close()
         
     if typePedido == '2':
+        print 'Lunes OK'
+        filename = 'Pedidos_fresco_lunes.zip'
         if os.path.exists(datos_para_balanza) and os.path.exists(sales_online) and os.path.exists(fresco_1) and os.path.exists(fresco_2):
             lunes = True;
             app_pedidos_fresco(lunes, path)
-            zip_path = os.path.join(UPLOAD_FOLDER_PEDIDOS_FRESCO, '../Pedidos_fresco.zip')
+            zip_path = os.path.join(UPLOAD_FOLDER_PEDIDOS_FRESCO, '../', filename)
             zipf = zipfile.ZipFile(zip_path,'w', zipfile.ZIP_DEFLATED)
             for root,dirs, files in os.walk(UPLOAD_FOLDER_PEDIDOS_FRESCO):
                 for file in files:
@@ -197,7 +196,7 @@ def uploadTypeFresco():
                     os.remove(os.path.join(root,file))
             zipf.close()
     
-    return send_from_directory(UPLOAD_FOLDER, 'Pedidos_fresco.zip')
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 # API Pedidos Fresco download
 @application.route("/download_pedidos_fresco/")

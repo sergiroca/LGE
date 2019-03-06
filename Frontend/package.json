@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "axios-extensions": "^3.0.5",
     "bootstrap-vue": "^2.0.0-rc.11",
     "element-ui": "^2.4.9",
     "moment-mini": "^2.22.1",

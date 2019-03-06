@@ -111,7 +111,7 @@ def merge_provider_data (data_products, data_physical, data_online, provider_lis
         
         products_provider = products_provider.iloc[products_provider.descripcion.str.lower().argsort()] #sort not ignoring upper and lowercase
         products_provider = products_provider[['descripcion', 'cantidad_tienda', 'Excedentes', 'cantidad_web', 'Prevision', 'Pedido', 'Formato']]
-        products_provider.columns = ['Nombre_producto', 'Venta_tienda', 'Excedentes', 'Venta_web', 'Prevision', 'Pedido', 'Formato']
+        products_provider.columns = ['Nombre_producto', 'Venta_tienda', 'Excedentes', 'Venta_online', 'Prevision', 'Pedido', 'Formato']
         
         df_dict[provider] = products_provider
         
@@ -179,7 +179,7 @@ def save_excel(pathdir,data,nameSheet):
             except:
                 pass
         adjusted_width = (max_length + 2) * 1.2
-        ws.column_dimensions[column].width = adjusted_width
+        #ws.column_dimensions[column].width = adjusted_width
 
     # titles
     ws.merge_cells('B1:F1')
@@ -238,6 +238,11 @@ def save_excel(pathdir,data,nameSheet):
 
 
 def edit_excel(pathdir,data,nameSheet):
+
+    print ('edit_excel function - ' + nameSheet)
+    #print ('pathdir is: ', pathdir)
+    #print ('name sheet is: ', nameSheet)
+    # print ('data is: ' + data)
     data = data.drop(columns=['Nombre_producto'])
     wb = load_workbook(filename = pathdir)
 
@@ -258,23 +263,24 @@ def edit_excel(pathdir,data,nameSheet):
             n = '=(K%d-I%d)+H%d' % (i, i, i)
             a = ws.cell(column=10,row = i , value=n)
         
-        #adjust column size
-        for col in ws.columns:
-            max_length = 0
-            column = col[0].column # Get the column name
-            for cell in col:
-                try: # Necessary to avoid error on empty cells
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(cell.value)
-                except:
-                    pass
-            adjusted_width = (max_length + 2) * 1.2
-            ws.column_dimensions[column].width = adjusted_width
+        # OJO ESTO ES LO QUE PETA
+        #adjust column size 
+        # for col in ws.columns:
+        #     max_length = 0
+        #     column = col[0].column # Get the column name
+        #     for cell in col:
+        #         try: # Necessary to avoid error on empty cells
+        #             if len(str(cell.value)) > max_length:
+        #                 max_length = len(cell.value)
+        #         except:
+        #             pass
+        #     adjusted_width = (max_length + 2)
+        #     # ws.column_dimensions[column].width = adjusted_width
                 
         wb.save(pathdir)
         wb.close()  
     except:
-        pass
+        print 'error en edit_excel'
         
 def add_new_products_excel(pathdir, data, nameSheet):
     data = data.drop(columns=['_merge'])

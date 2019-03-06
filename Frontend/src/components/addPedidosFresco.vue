@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row type="flex" justify="center">
+    <el-row type="flex" justify="center" :key="rerender">
       <el-col :span="12">
         <h4> Pedidos Fresco 1 y 2</h4>
         <p> 1. Indica que pedido quieres hacer</p>
@@ -36,7 +36,6 @@
               4. Sube los archivos excel del pedido del viernes (FRESCO_1.xlsx y FRESCO_2.xlsx)
             </p>
             <el-upload
-              class="upload-demo"
               drag
               :action= url
               :on-preview="handlePreview"
@@ -67,7 +66,8 @@ export default {
     return {
       type: '',
       attachments: [],
-      url: process.env.API_URL + 'upload_pedidos_fresco/'
+      url: process.env.API_URL + 'upload_pedidos_fresco/',
+      rerender: 0
     }
   },
   methods: {
@@ -82,7 +82,7 @@ export default {
       console.log(file)
     },
     handleExceed (files, fileList) {
-      this.$message.warning(`El límite de archivos es 1. Si deseas modificarlo, borra el archivo anterior.`)
+      this.$message.warning(`El límite de archivos es 4. Si deseas modificarlo, borra el archivo anterior.`)
     },
     handleError (files, fileList) {
       this.$message.error(`Ha ocurrido un error. Por favor, vuelve a subir el archivo.`)
@@ -91,8 +91,14 @@ export default {
       const payload = {
         type: this.type
       }
+      console.log(this)
       PedidosApi.uploadTypeFresco(payload)
+        .then(this.forceRerender)
+        .catch(error => alert(error.message))
       // PedidosApi.downloadFresco()
+    },
+    forceRerender () {
+      this.rerender += 1
     }
   }
 }

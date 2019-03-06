@@ -1,12 +1,15 @@
 // source of knowledge https://itnext.io/anyway-heres-how-to-do-ajax-api-calls-with-vue-js-e71e57d5cf12
 import axios from 'axios'
+import { cacheAdapterEnhancer } from 'axios-extensions'
 export default {
   uploadTypeFresco (payload) {
     return axios({
       url: '/upload_type_fresco/',
       method: 'POST',
       data: payload,
-      responseType: 'blob' // important
+      responseType: 'blob', // important
+      headers: {'Cache-Control': 'no-cache'},
+      adapter: cacheAdapterEnhancer(axios.defaults.adapter, true)
     }).then((response) => {
       console.log(response)
       const url = window.URL.createObjectURL(new Blob([response.data]))

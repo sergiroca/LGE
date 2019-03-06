@@ -62,6 +62,7 @@ def app_pedidos_fresco(lunes,path):
 
   # Lunes
   if lunes:
+    print 'Its monday'
 
     # if os.path.exists(lpath_physical):
     #   ldata_physical = read_productos_por_proveedor(lpath_physical)
@@ -77,7 +78,7 @@ def app_pedidos_fresco(lunes,path):
 
     lfresco_1 = merge_provider_data (products, ldata_physical, ldata_online, provider_list_FRESCO_1, path_fresco1)
     lfresco_2 = merge_provider_data (products, ldata_physical, ldata_online, provider_list_FRESCO_2, path_fresco2)
-
+    #print lfresco_2
     # add Lunes data to excel
     for provider in sorted(lfresco_1.iterkeys()): #was  fresco_1 ...
       edit_excel(path_fresco1, lfresco_1[provider], provider)
