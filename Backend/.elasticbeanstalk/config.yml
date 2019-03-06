@@ -1,0 +1,18 @@
+branch-defaults:
+  default:
+    environment: LGE-test2-dev
+    group_suffix: null
+global:
+  application_name: LGE_test2
+  branch: null
+  default_ec2_keyname: aws-key1
+  default_platform: Python 2.7
+  default_region: eu-west-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: null
+  repository: null
+  sc: null
+  workspace_type: Application
