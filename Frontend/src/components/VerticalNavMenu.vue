@@ -24,6 +24,10 @@
       <i class="el-icon-goods iconWhite"></i>
       <span slot="title">Pedidos Fresco</span>
     </el-menu-item>
+    <el-menu-item index="pedidos-np" >
+      <i class="el-icon-goods iconWhite"></i>
+      <span slot="title">No perecederos</span>
+    </el-menu-item>
   </el-menu>
   </div>
 </template>

@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.7
 import os
 import flask
 import zipfile
@@ -9,6 +10,8 @@ sys.path.insert(0, 'app_basculas/')
 from app_basculas import app_basculas
 sys.path.insert(0, 'app_pedidos_fresco/')
 from app_pedidos_fresco import app_pedidos_fresco 
+sys.path.insert(0, 'app_pedidosNP/')
+from app_pedidosNP import app_pedidosNP
 
 from werkzeug.utils import secure_filename
 
@@ -61,6 +64,8 @@ UPLOAD_FOLDER = os.path.join(application.root_path, '../Documents')
 UPLOAD_FOLDER_ORDERS = os.path.join(application.root_path, '../Documents/Orders')
 UPLOAD_FOLDER_BALANZAS = os.path.join(application.root_path, '../Documents/Datos_para_balanza')
 UPLOAD_FOLDER_PEDIDOS_FRESCO = os.path.join(application.root_path, '../Documents/Pedidos_fresco')
+UPLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/PedidosNP/Entrada')
+DOWNLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/pedidosNP/Salida/')
 ALLOWED_EXTENSIONS = set(['csv' , 'xlsx'])
 
 # Elastic Beanstalk initalization
@@ -203,6 +208,70 @@ def uploadTypeFresco():
 def downloadPedidosFresco():
     print 'DOWNLOAD OK'
     return send_from_directory(UPLOAD_FOLDER, 'Pedidos_fresco.zip')
+
+# API PedidosNP
+@application.route("/uploadPedidosNP/", methods=['POST'])
+def uploadPedidosNP():
+    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        file = request.files['file']
+        print file.filename
+        if file and allowed_file(file.filename) and file.filename == 'Products_Stocks.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+            # parseCSV.parsecsv(filename)
+        elif file and allowed_file(file.filename) and file.filename == 'sales_physical_3months_prior.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+        elif file and allowed_file(file.filename) and file.filename == 'sales_physical_3months_after.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+        elif file and allowed_file(file.filename) and file.filename == 'sales_physical_12months.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+        elif file and allowed_file(file.filename) and file.filename == 'sales_online_12months.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+        elif file and allowed_file(file.filename) and file.filename == 'sales_online_3months_after.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+        elif file and allowed_file(file.filename) and file.filename == 'sales_online_3months_prior.csv':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_PEDIDOS_NP, filename)
+            # app_basculas(filepath)
+
+            response_object['message'] = 'Order processed!'
+            return jsonify(response_object)
+        response_object['message'] = 'Order not processed properly!'
+    return jsonify(response_object)
+
+# API Pedidos Fresco download
+@application.route("/download_pedidosNP/<string:provider>")
+def downloadPedidosNP(provider):
+    # path = os.path.join(application.root_path, '../app_pedidosNP/data')
+    app_pedidosNP(provider, UPLOAD_FOLDER_PEDIDOS_NP)
+
+    for root,dirs, files in os.walk(UPLOAD_FOLDER_PEDIDOS_NP):
+            for file in files:
+                print file
+                os.remove(os.path.join(root,file))
+
+
+    return send_from_directory(DOWNLOAD_FOLDER_PEDIDOS_NP, 'output.xlsx')
+
 
 
 if __name__ == '__main__':
