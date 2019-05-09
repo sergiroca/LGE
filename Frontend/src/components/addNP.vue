@@ -99,7 +99,7 @@ export default {
           label: 'Valle del Taibilla'
         },
         {
-          value: 'pastor',
+          value: 'buen',
           label: 'El Buen Pastor'
         },
         {

@@ -4,6 +4,7 @@ import flask
 import zipfile
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response, send_from_directory
 from application import db, application
+import traceback
 
 import sys
 sys.path.insert(0, 'app_basculas/')
@@ -65,7 +66,7 @@ UPLOAD_FOLDER_ORDERS = os.path.join(application.root_path, '../Documents/Orders'
 UPLOAD_FOLDER_BALANZAS = os.path.join(application.root_path, '../Documents/Datos_para_balanza')
 UPLOAD_FOLDER_PEDIDOS_FRESCO = os.path.join(application.root_path, '../Documents/Pedidos_fresco')
 UPLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/PedidosNP/Entrada')
-DOWNLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/pedidosNP/Salida/')
+DOWNLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/PedidosNP/Salida')
 ALLOWED_EXTENSIONS = set(['csv' , 'xlsx'])
 
 # Elastic Beanstalk initalization
@@ -259,12 +260,18 @@ def uploadPedidosNP():
     return jsonify(response_object)
 
 # API Pedidos no perecedero download
-@application.route("/download_pedidosNP/<string:provider>")
+@application.route("/download_pedidosNP/<string:provider>", methods=['GET'])
 def downloadPedidosNP(provider):
     # path = os.path.join(application.root_path, '../app_pedidosNP/data')
-    app_pedidosNP(provider, UPLOAD_FOLDER_PEDIDOS_NP)
+    try:
+        app_pedidosNP(provider, UPLOAD_FOLDER_PEDIDOS_NP)
+        print(DOWNLOAD_FOLDER_PEDIDOS_NP, 'output' + '.xlsx')
+        return send_from_directory(DOWNLOAD_FOLDER_PEDIDOS_NP, 'output' + '.xlsx')
+    except Exception:
+        traceback.print_exc()
+        return 'Error en la app'
 
-    return send_from_directory(DOWNLOAD_FOLDER_PEDIDOS_NP, 'output.xlsx')
+    
 
 # API Pedidos no perecedero borrar
 @application.route("/deleteFilesNP/")
