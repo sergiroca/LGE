@@ -37,6 +37,7 @@ export default {
   name: 'VerticalNavMenu',
   data () {
     return {
+      activeLink: '',
       activeIndex: '1',
       isCollapse: false
     }

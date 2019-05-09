@@ -258,11 +258,17 @@ def uploadPedidosNP():
         response_object['message'] = 'Order not processed properly!'
     return jsonify(response_object)
 
-# API Pedidos Fresco download
+# API Pedidos no perecedero download
 @application.route("/download_pedidosNP/<string:provider>")
 def downloadPedidosNP(provider):
     # path = os.path.join(application.root_path, '../app_pedidosNP/data')
     app_pedidosNP(provider, UPLOAD_FOLDER_PEDIDOS_NP)
+
+    return send_from_directory(DOWNLOAD_FOLDER_PEDIDOS_NP, 'output.xlsx')
+
+# API Pedidos no perecedero borrar
+@application.route("/deleteFilesNP/")
+def deleteFilesNP():
 
     for root,dirs, files in os.walk(UPLOAD_FOLDER_PEDIDOS_NP):
             for file in files:
@@ -270,7 +276,7 @@ def downloadPedidosNP(provider):
                 os.remove(os.path.join(root,file))
 
 
-    return send_from_directory(DOWNLOAD_FOLDER_PEDIDOS_NP, 'output.xlsx')
+    return 'deleted'
 
 
 

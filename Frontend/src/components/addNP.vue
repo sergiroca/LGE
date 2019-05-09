@@ -13,11 +13,10 @@
         <p> "sales_physical_12months.csv"</p>
         <p> "sales_online_12months.csv"</p>
         <el-upload
-          class="upload-demo"
+          ref="upload"
           drag
           :action= url
           :on-preview="handlePreview"
-          :on-remove="handleRemove"
           :file-list="fileList"
           :limit="7"
           multiple
@@ -32,7 +31,7 @@
           <br>
           <br>
           <p>Escoge el Proveedor</p>
-          <el-form :model="provider" ref="providerForm" :rules="rules">
+          <el-form :model="provider" ref="providerForm">
             <el-col>
               <el-form-item prop="provider">
                 <el-select v-model="provider.provider" filterable placeholder="Proveedor">
@@ -47,6 +46,7 @@
             </el-col>
             <el-col>
               <el-form-item>
+                <el-button  @click="deleteFiles()" plain>Borrar archivos subidos</el-button>
                 <el-button type="primary" :disabled="provider.provider === ''" @click="download('providerForm')">Descargar</el-button>
               </el-form-item>
             </el-col>
@@ -64,14 +64,15 @@ export default {
   name: 'addNP',
   data () {
     return {
+      fileList: [],
       attachments: [],
       url: process.env.API_URL + 'uploadPedidosNP/',
       provider: {
         provider: ''
       },
-      rules: {
-        provider: {required: true, message: 'Porfavor selecciona un Proveedor'}
-      },
+      // rules: {
+      //   provider: {required: true, message: 'Porfavor selecciona un Proveedor'}
+      // },
       providers: [
         {
           value: 'segura',
@@ -79,13 +80,192 @@ export default {
         },
         {
           value: 'gumendi',
-          label: 'gumendi'
-        }]
+          label: 'Gumendi'
+        },
+        {
+          value: 'biogra',
+          label: 'Biográ'
+        },
+        {
+          value: 'bioprasad',
+          label: 'Bioprasad'
+        },
+        {
+          value: 'bailandera',
+          label: 'La Bailandera'
+        },
+        {
+          value: 'taibilla',
+          label: 'Valle del Taibilla'
+        },
+        {
+          value: 'pastor',
+          label: 'El Buen Pastor'
+        },
+        {
+          value: 'olivateria',
+          label: 'L\'olivateria'
+        },
+        {
+          value: 'catxol',
+          label: 'Mas de Catxol'
+        },
+        {
+          value: 'agreco',
+          label: 'Agrecoastur'
+        },
+        {
+          value: 'biocosmetics',
+          label: 'Amapola Biocosmetics'
+        },
+        {
+          value: 'saper',
+          label: 'Saper'
+        },
+        {
+          value: 'liliput',
+          label: 'Liliput'
+        },
+        {
+          value: 'labranza',
+          label: 'Labranza Toledana'
+        },
+        {
+          value: 'biogredos',
+          label: 'Biogredos'
+        },
+        {
+          value: 'sojade',
+          label: 'Sojade'
+        },
+        {
+          value: 'antonio simon',
+          label: 'Antonio Simón'
+        },
+        {
+          value: 'meli',
+          label: 'La Abeja Meli'
+        },
+        {
+          value: 'asturcilla',
+          label: 'Asturcilla'
+        },
+        {
+          value: 'sole',
+          label: 'Chocolates Solé'
+        },
+        {
+          value: 'leña',
+          label: 'El horno de leña'
+        },
+        {
+          value: 'espanica',
+          label: 'Espanica'
+        },
+        {
+          value: 'pamies',
+          label: 'Pamies Vitae'
+        },
+        {
+          value: 'granero',
+          label: 'El granero'
+        },
+        {
+          value: 'herbes',
+          label: 'Herbes del Molí'
+        },
+        {
+          value: 'fruitalpuntbio',
+          label: 'Fruitalpuntbio'
+        },
+        {
+          value: 'esencia',
+          label: 'Esencia Rural'
+        },
+        {
+          value: 'lluna',
+          label: 'Cervezas Lluna'
+        },
+        {
+          value: 'pistachos',
+          label: 'Maná Pistachos'
+        },
+        {
+          value: 'algamar',
+          label: 'Algamar'
+        },
+        {
+          value: 'riet',
+          label: 'Riet Vell'
+        },
+        {
+          value: 'ecolecera',
+          label: 'Ecolécera'
+        },
+        {
+          value: 'coato',
+          label: 'Ecoato'
+        },
+        {
+          value: 'pandomar',
+          label: 'PanDoMar'
+        },
+        {
+          value: 'ecoandes',
+          label: 'Ecoandes'
+        },
+        {
+          value: 'verdera',
+          label: 'La verdera'
+        },
+        {
+          value: 'cachopo',
+          label: 'Cachopo'
+        },
+        {
+          value: 'biobel',
+          label: 'Biobel'
+        },
+        {
+          value: 'granovita',
+          label: 'Granovita'
+        },
+        {
+          value: 'ahimsa',
+          label: 'Ahimsa'
+        },
+        {
+          value: 'irati',
+          label: 'Irati'
+        },
+        {
+          value: 'copa',
+          label: 'Red Copa de Luna'
+        },
+        {
+          value: 'riojavina',
+          label: 'Riojavina'
+        },
+        {
+          value: 'colmena',
+          label: 'La Colmena'
+        },
+        {
+          value: 'ecorazon',
+          label: 'Ecorazón de la Mancha'
+        },
+        {
+          value: 'ochoa',
+          label: 'Jesús Ochoa'
+        }
+      ]
     }
+  },
+  created () {
   },
   methods: {
     handleRemove (file, fileList) {
-      console.log(file, fileList)
+      return false
     },
     handlePreview (file) {
       console.log(file)
@@ -105,6 +285,10 @@ export default {
           return false
         }
       })
+      this.$refs.upload.clearFiles()
+    },
+    deleteFiles () {
+      PedidosNPApi.deleteFilesNP()
     }
   }
 }
