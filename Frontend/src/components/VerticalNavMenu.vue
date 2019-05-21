@@ -28,6 +28,10 @@
       <i class="el-icon-goods iconWhite"></i>
       <span slot="title">No perecederos</span>
     </el-menu-item>
+    <el-menu-item index="inventario" >
+      <i class="el-icon-goods iconWhite"></i>
+      <span slot="title">Inventario</span>
+    </el-menu-item>
   </el-menu>
   </div>
 </template>

@@ -13,6 +13,10 @@ sys.path.insert(0, 'app_pedidos_fresco/')
 from app_pedidos_fresco import app_pedidos_fresco 
 sys.path.insert(0, 'app_pedidosNP/')
 from app_pedidosNP import app_pedidosNP
+sys.path.insert(0, 'app_inventario/')
+from generar_excels import generar_excels
+from report_generation import report_generation
+from update_stock import update_stock
 
 from werkzeug.utils import secure_filename
 
@@ -67,6 +71,8 @@ UPLOAD_FOLDER_BALANZAS = os.path.join(application.root_path, '../Documents/Datos
 UPLOAD_FOLDER_PEDIDOS_FRESCO = os.path.join(application.root_path, '../Documents/Pedidos_fresco')
 UPLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/PedidosNP/Entrada')
 DOWNLOAD_FOLDER_PEDIDOS_NP = os.path.join(application.root_path, '../Documents/PedidosNP/Salida')
+UPLOAD_FOLDER_INVENTARIO = os.path.join(application.root_path, '../Documents/Inventario/Entrada')
+DOWNLOAD_FOLDER_INVENTARIO = os.path.join(application.root_path, '../Documents/Inventario/Salida')
 ALLOWED_EXTENSIONS = set(['csv' , 'xlsx'])
 
 # Elastic Beanstalk initalization
@@ -286,6 +292,50 @@ def deleteFilesNP():
     return 'deleted'
 
 
+# API Inventario generar excels inventario
+@application.route("/generateExcel/", methods=['GET'])
+def generateExcel():
+    if request.method == 'GET':
+        generar_excels(DOWNLOAD_FOLDER_INVENTARIO)
+        filename = 'Inventario.zip'
+        zip_path = os.path.join(DOWNLOAD_FOLDER_INVENTARIO, '../', filename)
+        zipf = zipfile.ZipFile(zip_path,'w', zipfile.ZIP_DEFLATED)
+        for root,dirs, files in os.walk(DOWNLOAD_FOLDER_INVENTARIO):
+            for file in files:
+                zipf.write(os.path.relpath(os.path.join(root, file)))
+                os.remove(os.path.join(root,file))
+        zipf.close()
+        
+    return send_from_directory((UPLOAD_FOLDER+'/Inventario/'), filename)
+
+# API Inventario subir product_list excel
+@application.route("/uploadInventory/", methods=['POST'])
+def uploadInventory():
+    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename) and file.filename == 'product_list.xlsx':
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER_INVENTARIO, filename))
+            filepath = os.path.join(UPLOAD_FOLDER_INVENTARIO, filename)
+            response_object['message'] = 'Order processed!'
+            return jsonify(response_object)
+        response_object['message'] = 'Order not processed properly!'
+    return jsonify(response_object)
+
+# API Inventario descargar report
+@application.route("/downloadReport/", methods=['GET'])
+def downloadReport():
+    if request.method == 'GET':
+        report_generation(UPLOAD_FOLDER_INVENTARIO, DOWNLOAD_FOLDER_INVENTARIO)
+        return send_from_directory(DOWNLOAD_FOLDER_INVENTARIO, 'stock_reporte' + '.xlsx')
+
+# API Inventario update stock
+@application.route("/updateStock/", methods=['GET'])
+def updateStock():
+    if request.method == 'GET':
+        update_stock(UPLOAD_FOLDER_INVENTARIO)
+        return 'ok'
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=5000)

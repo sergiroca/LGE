@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Basculas from '@/components/Basculas'
 import PedidosFresco from '@/components/PedidosFresco'
 import PedidosNP from '@/components/PedidosNP'
+import Inventario from '@/components/Inventario'
 
 Vue.use(Router)
 
@@ -27,6 +28,11 @@ export default new Router({
       path: '/pedidos-np',
       name: 'PedidosNP',
       component: PedidosNP
+    },
+    {
+      path: '/inventario',
+      name: 'Inventario',
+      component: Inventario
     }
   ],
   mode: 'history'
