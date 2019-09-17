@@ -2,6 +2,9 @@ import os
 import pandas as pd
 import numpy as np
 from functions import *
+from application.models import *
+from application import db
+from sqlalchemy import or_
 
 def app_pedidos_fresco(lunes,path):
 
@@ -19,28 +22,38 @@ def app_pedidos_fresco(lunes,path):
   path_fresco2 = path + "/FRESCO_2.xlsx"
 
   # Provider paths
-  provider_list_FRESCO_1 = ['Bio Trailla -Finca la Noria', 'Biomilanes S.L.','Ecoeduco','La Vall de la Casella','Pidebio','FruitalpuntBio','PAMIES VITAE (Pamies Horticoles SL)','Finca Dos Castanos']
-  provider_list_FRESCO_2 = ['Biobardales -Comercial Beldrea', 'Pollos Sanchonar','Suerte Ampanera C.B.','COOPERATIVA CRICA','El Cantero de Letur','Carnes Braman','Pedaque']
-  provider_dict = {
-    'Bio Trailla -Finca la Noria'         : 'trailla',
-    'Biomilanes S.L.'                     : 'biomilanes',
-    'Ecoeduco'                            : 'ecoeduco',
-    'La Vall de la Casella'               : 'casella',
-    'Pidebio'                             : 'pidebio',
-    'FruitalpuntBio'                      : 'fruitalpuntbio',
-    'PAMIES VITAE (Pamies Horticoles SL)' : 'pamies',
-    'Finca Dos Castanos'                  : 'castanos',
-    'Biobardales -Comercial Beldrea'      : 'biobardales',
-    'Pollos Sanchonar'                    : 'sanchonar',
-    'Suerte Ampanera C.B.'                : 'ampanera',
-    'COOPERATIVA CRICA'                   : 'CRICA',
-    'El Cantero de Letur'                 : 'letur',
-    'Carnes Braman'                       : 'braman',
-    'Pedaque'                             : 'pedaque'
-  }
+  # provider_list_FRESCO_1 = ['Bio Trailla -Finca la Noria', 'Biomilanes S.L.','Ecoeduco','La Vall de la Casella','Pidebio','FruitalpuntBio','PAMIES VITAE (Pamies Horticoles SL)','Finca Dos Castanos']
+  providerFRESCO1 = db.session.query(Provider).filter_by(group = 1).all()
+  provider_list_FRESCO_1 = []
+  for provider in providerFRESCO1:
+    provider_list_FRESCO_1.append(provider.name)
+  # provider_list_FRESCO_2 = ['Biobardales -Comercial Beldrea', 'Pollos Sanchonar','Suerte Ampanera C.B.','COOPERATIVA CRICA','El Cantero de Letur','Carnes Braman','Pedaque']
+  providerFRESCO2 = db.session.query(Provider).filter_by(group = 2).all()
+  provider_list_FRESCO_2 = []
+  for provider in providerFRESCO2:
+    provider_list_FRESCO_2.append(provider.name)
+
+  # provider_dict = {
+  #   'Bio Trailla -Finca la Noria'         : 'trailla',
+  #   'Biomilanes S.L.'                     : 'biomilanes',
+  #   'Ecoeduco'                            : 'ecoeduco',
+  #   'La Vall de la Casella'               : 'casella',
+  #   'Pidebio'                             : 'pidebio',
+  #   'FruitalpuntBio'                      : 'fruitalpuntbio',
+  #   'PAMIES VITAE (Pamies Horticoles SL)' : 'pamies',
+  #   'Finca Dos Castanos'                  : 'castanos',
+  #   'Biobardales -Comercial Beldrea'      : 'biobardales',
+  #   'Pollos Sanchonar'                    : 'sanchonar',
+  #   'Suerte Ampanera C.B.'                : 'ampanera',
+  #   'COOPERATIVA CRICA'                   : 'CRICA',
+  #   'El Cantero de Letur'                 : 'letur',
+  #   'Carnes Braman'                       : 'braman',
+  #   'Pedaque'                             : 'pedaque'
+  # }
+  providerFRESCO = db.session.query(Provider).filter(or_(Provider.group == 1, Provider.group == 2)).all()
 
   products = read_productos(path_products)
-  products = add_provider_from_dict(products, provider_dict)
+  products = add_provider_from_dict(products, providerFRESCO)
   products = add_formats(path_formats, products)
 
   if not lunes:
@@ -48,6 +61,7 @@ def app_pedidos_fresco(lunes,path):
     vdata_online = read_productos_por_proveedor(vpath_online)
 
     # provider_list = get_provider_list(vdata_physical,vdata_online)
+    print provider_list_FRESCO_1
     fresco_1 = merge_provider_data (products, vdata_physical, vdata_online, provider_list_FRESCO_1, path_fresco1)
     fresco_2 = merge_provider_data (products, vdata_physical, vdata_online, provider_list_FRESCO_2, path_fresco2)
 
