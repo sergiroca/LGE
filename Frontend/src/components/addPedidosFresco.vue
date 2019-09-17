@@ -32,6 +32,7 @@
           <div v-if="type === '2'">
             <p>
               2. Sube el archivo "datos_para_balanza.csv" <br>
+              4. Sube el archivo de venta física "Productos_por_proveedor_tienda.csv" <br>
               3. Sube el archivo de venta online "Productos_por_proveedor_online.csv" <br>
               4. Sube los archivos excel del pedido del viernes (FRESCO_1.xlsx y FRESCO_2.xlsx)
             </p>
