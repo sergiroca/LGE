@@ -196,7 +196,7 @@ def uploadTypeFresco():
     if typePedido == '2':
         print 'Lunes OK'
         filename = 'Pedidos_fresco_lunes.zip'
-        if os.path.exists(datos_para_balanza) and os.path.exists(sales_online) and os.path.exists(fresco_1) and os.path.exists(fresco_2):
+        if os.path.exists(datos_para_balanza) and os.path.exists(sales_online) and os.path.exists(sales_physical) and os.path.exists(fresco_1) and os.path.exists(fresco_2):
             lunes = True;
             app_pedidos_fresco(lunes, path)
             zip_path = os.path.join(UPLOAD_FOLDER_PEDIDOS_FRESCO, '../', filename)

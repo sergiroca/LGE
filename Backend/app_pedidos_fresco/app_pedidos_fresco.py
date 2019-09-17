@@ -15,7 +15,7 @@ def app_pedidos_fresco(lunes,path):
   vpath_physical = path + "/Productos_por_proveedor_tienda.csv"
   vpath_online = path + "/Productos_por_proveedor_online.csv"
 
-  # lpath_physical = path + "/Productos_por_proveedor_tienda.csv"
+  lpath_physical = path + "/Productos_por_proveedor_tienda.csv"
   lpath_online = path + "/Productos_por_proveedor_online.csv"
 
   path_fresco1 = path + "/FRESCO_1.xlsx"
@@ -78,11 +78,11 @@ def app_pedidos_fresco(lunes,path):
   if lunes:
     print 'Its monday'
 
-    # if os.path.exists(lpath_physical):
-    #   ldata_physical = read_productos_por_proveedor(lpath_physical)
-    # else:
-    ldata_physical = pd.DataFrame(columns=['Proveedor','descripcion','cantidad'])
-    #   print 'INFO: No hay datos de venta en tienda para el lunes. Se mostraran vacios en el fichero de salida.'
+    if os.path.exists(lpath_physical):
+      ldata_physical = read_productos_por_proveedor(lpath_physical)
+    else:
+      ldata_physical = pd.DataFrame(columns=['Proveedor','descripcion','cantidad'])
+      print 'INFO: No hay datos de venta en tienda para el lunes. Se mostraran vacios en el fichero de salida.'
 
     if os.path.exists(lpath_online):
       ldata_online = read_productos_por_proveedor(lpath_online)
