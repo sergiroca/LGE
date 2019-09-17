@@ -41,7 +41,7 @@
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :data="type"
-              :limit="4"
+              :limit="5"
               :on-exceed="handleExceed"
               :on-error="handleError"
               multiple
