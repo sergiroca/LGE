@@ -30,5 +30,17 @@ class Provider(db.Model):
     # 0 = NP, 1 = Fresco tipo 1, 2 = Fresco tipo 2
     group = db.Column(db.Integer, nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'keyword': self.keyword,
+            'group': self.group
+        }
+
+    def __repr__(self):
+        return '<Proveedor %r>' % self.name
+
 
 
