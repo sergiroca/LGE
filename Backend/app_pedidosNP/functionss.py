@@ -29,17 +29,20 @@ def clean_data(filepath,provider,type_csv):
 
 	#data_provider = data.loc[data['Proveedor'] == provider]
 	data_provider = data[data['Proveedor'].str.contains(provider,case=False) ==True]
-	
 	return data_provider
 
 
 def get_sales(data_provider_online,data_provider_physical,months):
+
 	items_in_common = pd.merge(data_provider_physical[['descripcion','cantidad']], data_provider_online[['descripcion','cantidad']], on=['descripcion'], how = 'outer')
 	items_in_common = items_in_common.rename(columns={'cantidad_x': 'sales_physical_total', 'cantidad_y': 'sales_online_total'})
 	items_in_common = items_in_common.fillna(0)
+	print items_in_common
 	items_in_common['sales_physical_total'] = items_in_common['sales_physical_total'].str.replace(',','.')
+	items_in_common['sales_physical_total'] = items_in_common['sales_physical_total'].str.replace(' ','')
 	items_in_common['sales_physical_total'] = items_in_common['sales_physical_total'].astype('float64')
 	items_in_common['sales_online_total'] = items_in_common['sales_online_total'].str.replace(',','.')
+	items_in_common['sales_online_total'] = items_in_common['sales_online_total'].str.replace(' ','')
 	items_in_common['sales_online_total'] = items_in_common['sales_online_total'].astype('float64')
 
 	items_in_common = items_in_common.fillna(0)

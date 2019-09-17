@@ -123,8 +123,8 @@ export default {
           label: 'Saper'
         },
         {
-          value: 'liliput',
-          label: 'Liliput'
+          value: 'lilliput',
+          label: 'Lilliput'
         },
         {
           value: 'labranza',
@@ -235,8 +235,8 @@ export default {
           label: 'Ahimsa'
         },
         {
-          value: 'irati',
-          label: 'Irati'
+          value: 'josenea',
+          label: 'Irati - Josenea'
         },
         {
           value: 'copa',
