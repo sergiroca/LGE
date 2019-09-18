@@ -32,6 +32,10 @@
       <i class="el-icon-goods iconWhite"></i>
       <span slot="title">Inventario</span>
     </el-menu-item>
+        <el-menu-item index="providers" >
+      <i class="el-icon-goods iconWhite"></i>
+      <span slot="title">Proveedores</span>
+    </el-menu-item>
   </el-menu>
   </div>
 </template>

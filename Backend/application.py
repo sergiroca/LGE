@@ -5,6 +5,7 @@ import zipfile
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response, send_from_directory
 from application import db, application
 import traceback
+from application.models import Provider
 
 import sys
 sys.path.insert(0, 'app_basculas/')
@@ -336,6 +337,13 @@ def updateStock():
     if request.method == 'GET':
         update_stock(UPLOAD_FOLDER_INVENTARIO)
         return 'ok'
+
+# API Providers
+@application.route("/providers/", methods=['GET'])
+def getProviders():
+    if request.method == 'GET':
+        providers = db.session.query(Provider).all()
+    return jsonify(Providers = [i.serialize for i in providers])
 
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=5000)

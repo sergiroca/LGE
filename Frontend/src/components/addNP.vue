@@ -60,6 +60,7 @@
 
 <script>
 import PedidosNPApi from '@/services/api/PedidosNP'
+import ProvidersApi from '@/services/api/Providers'
 export default {
   name: 'addNP',
   data () {
@@ -70,198 +71,24 @@ export default {
       provider: {
         provider: ''
       },
-      // rules: {
-      //   provider: {required: true, message: 'Porfavor selecciona un Proveedor'}
-      // },
-      providers: [
-        {
-          value: 'segura',
-          label: 'El rincón del segura'
-        },
-        {
-          value: 'gumendi',
-          label: 'Gumendi'
-        },
-        {
-          value: 'biogra',
-          label: 'Biográ'
-        },
-        {
-          value: 'bioprasad',
-          label: 'Bioprasad'
-        },
-        {
-          value: 'bailandera',
-          label: 'La Bailandera'
-        },
-        {
-          value: 'taibilla',
-          label: 'Valle del Taibilla'
-        },
-        {
-          value: 'buen',
-          label: 'El Buen Pastor'
-        },
-        {
-          value: 'olivateria',
-          label: 'L\'olivateria'
-        },
-        {
-          value: 'catxol',
-          label: 'Mas de Catxol'
-        },
-        {
-          value: 'agreco',
-          label: 'Agrecoastur'
-        },
-        {
-          value: 'biocosmetics',
-          label: 'Amapola Biocosmetics'
-        },
-        {
-          value: 'saper',
-          label: 'Saper'
-        },
-        {
-          value: 'lilliput',
-          label: 'Lilliput'
-        },
-        {
-          value: 'labranza',
-          label: 'Labranza Toledana'
-        },
-        {
-          value: 'biogredos',
-          label: 'Biogredos'
-        },
-        {
-          value: 'sojade',
-          label: 'Sojade'
-        },
-        {
-          value: 'antonio simon',
-          label: 'Antonio Simón'
-        },
-        {
-          value: 'meli',
-          label: 'La Abeja Meli'
-        },
-        {
-          value: 'asturcilla',
-          label: 'Asturcilla'
-        },
-        {
-          value: 'sole',
-          label: 'Chocolates Solé'
-        },
-        {
-          value: 'lena',
-          label: 'El horno de leña'
-        },
-        {
-          value: 'espanica',
-          label: 'Espanica'
-        },
-        {
-          value: 'pamies',
-          label: 'Pamies Vitae'
-        },
-        {
-          value: 'granero',
-          label: 'El granero'
-        },
-        {
-          value: 'herbes',
-          label: 'Herbes del Molí'
-        },
-        {
-          value: 'fruitalpuntbio',
-          label: 'Fruitalpuntbio'
-        },
-        {
-          value: 'esencia',
-          label: 'Esencia Rural'
-        },
-        {
-          value: 'lluna',
-          label: 'Cervezas Lluna'
-        },
-        {
-          value: 'pistachos',
-          label: 'Maná Pistachos'
-        },
-        {
-          value: 'algamar',
-          label: 'Algamar'
-        },
-        {
-          value: 'riet',
-          label: 'Riet Vell'
-        },
-        {
-          value: 'ecolecera',
-          label: 'Ecolécera'
-        },
-        {
-          value: 'coato',
-          label: 'Ecoato'
-        },
-        {
-          value: 'pandomar',
-          label: 'PanDoMar'
-        },
-        {
-          value: 'ecoandes',
-          label: 'Ecoandes'
-        },
-        {
-          value: 'verdera',
-          label: 'La verdera'
-        },
-        {
-          value: 'cachopo',
-          label: 'Cachopo'
-        },
-        {
-          value: 'biobel',
-          label: 'Biobel'
-        },
-        {
-          value: 'granovita',
-          label: 'Granovita'
-        },
-        {
-          value: 'ahimsa',
-          label: 'Ahimsa'
-        },
-        {
-          value: 'josenea',
-          label: 'Irati - Josenea'
-        },
-        {
-          value: 'copa',
-          label: 'Red Copa de Luna'
-        },
-        {
-          value: 'riojavina',
-          label: 'Riojavina'
-        },
-        {
-          value: 'colmena',
-          label: 'La Colmena'
-        },
-        {
-          value: 'ecorazon',
-          label: 'Ecorazón de la Mancha'
-        },
-        {
-          value: 'ochoa',
-          label: 'Jesús Ochoa'
-        }
-      ]
+      providers: []
     }
   },
   created () {
+    ProvidersApi.getProviders()
+      .then((response) => {
+        let providers = response.data.Providers
+        for (let i = 0; i < providers.length; i++) {
+          console.log(providers[i])
+          if (providers[i].group === 0) {
+            let provider = {
+              'label': providers[i].name,
+              'value': providers[i].keyword
+            }
+            this.providers.push(provider)
+          }
+        }
+      })
   },
   methods: {
     handleRemove (file, fileList) {

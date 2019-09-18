@@ -43,15 +43,15 @@ def add_formats(filepath, products):
     return products
 
 
-def add_provider_from_dict(products, provider_dict):
+def add_provider_from_dict(products, providerFRESCO):
     products['Proveedor'] = ''
-    for item in provider_dict:
+    for item in providerFRESCO:
         names = products['descripcion']
         names = names.str.lower()
-        name = provider_dict[item]
-        name = name.lower()
-        prodIdx = names.str.contains(name)
-        products['Proveedor'][prodIdx] = item
+        keyword = item.keyword
+        keyword = keyword.lower()
+        prodIdx = names.str.contains(keyword)
+        products['Proveedor'][prodIdx] = item.name
     products = products[products['Proveedor'] != '']
     return products
 
@@ -71,6 +71,7 @@ def merge_provider_data (data_products, data_physical, data_online, provider_lis
         #print provider
         products = data_products[data_products['Proveedor'] == provider]
         products = products[['descripcion','Formato']]
+
 
         products_physical = data_physical[data_physical['Proveedor'].str.contains(provider)]
         products_physical = products_physical[['descripcion','cantidad']]
