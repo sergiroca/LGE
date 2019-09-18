@@ -133,7 +133,7 @@ providersNP = [
           'label': 'Chocolates Solé'
         },
         {
-          'value': 'leña',
+          'value': 'lena',
           'label': 'El horno de leña'
         },
         {
