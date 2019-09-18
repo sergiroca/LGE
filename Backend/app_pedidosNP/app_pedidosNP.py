@@ -52,7 +52,6 @@ def app_pedidosNP(provider, path):
 		os.remove(path + '/../Salida/output.xlsx')
 
 	writer = pd.ExcelWriter(path + '/../Salida/output.xlsx')
-	print provider
 
 	# RENAME COLUMNS
 	output_12months = output_12months.rename(columns={'descripcion': 'Nombre_producto', 'sales_total': 'ventas_periodo', 'sales_total_mes': 'ventas_mensuales','to_buy_total': 'pedido_periodo'})
@@ -63,6 +62,17 @@ def app_pedidosNP(provider, path):
 	output_12months[['Nombre_producto','ventas_periodo','ventas_mensuales','stock']].to_excel(writer,'12 meses')
 	output_3months_prior[['Nombre_producto','ventas_periodo','ventas_mensuales','stock']].to_excel(writer,'3 meses antes')
 	output_3months_after[['Nombre_producto','ventas_periodo','ventas_mensuales','stock']].to_excel(writer,'3 meses despues')
+	
 	data_compare.to_excel(writer,'Comparativa')
+
+	if data_compare.empty: # if there is no data (no sales)
+		message = pd.DataFrame(['No hay ventas en este periodo'])
+		message.to_excel(writer,'Comparativa')
+	if output_12months.empty:
+		message.to_excel(writer,'12 meses')
+	if output_3months_prior.empty:
+		message.to_excel(writer,'3 meses antes')
+	if output_3months_after.empty:
+		message.to_excel(writer,'3 meses despues')
 
 	writer.save()

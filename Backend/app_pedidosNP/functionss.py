@@ -37,7 +37,6 @@ def get_sales(data_provider_online,data_provider_physical,months):
 	items_in_common = pd.merge(data_provider_physical[['descripcion','cantidad']], data_provider_online[['descripcion','cantidad']], on=['descripcion'], how = 'outer')
 	items_in_common = items_in_common.rename(columns={'cantidad_x': 'sales_physical_total', 'cantidad_y': 'sales_online_total'})
 	items_in_common = items_in_common.fillna(0)
-	print items_in_common
 	items_in_common['sales_physical_total'] = items_in_common['sales_physical_total'].str.replace(',','.')
 	items_in_common['sales_physical_total'] = items_in_common['sales_physical_total'].str.replace(' ','')
 	items_in_common['sales_physical_total'] = items_in_common['sales_physical_total'].astype('float64')
