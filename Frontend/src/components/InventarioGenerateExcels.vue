@@ -58,7 +58,7 @@ export default {
   name: 'InventarioGenerateExcels',
   data () {
     return {
-      input:'',
+      input: '',
       fileList: [],
       pass: 'pod2019',
       attachments: [],
@@ -102,12 +102,12 @@ export default {
     downloadReport () {
       this.loading2 = true
       InventarioApi.downloadReport()
-        .then(() => { 
+        .then(() => {
           this.loading2 = false
           this.showUpdateStock = true
           })
       this.$refs.upload.clearFiles()
-      
+
     },
     updateStock () {
       this.loading3 = true

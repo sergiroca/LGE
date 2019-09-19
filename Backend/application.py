@@ -345,5 +345,52 @@ def getProviders():
         providers = db.session.query(Provider).all()
     return jsonify(Providers = [i.serialize for i in providers])
 
+@application.route("/providers/", methods=['POST'])
+def addProvider():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        provider = Provider(
+            name=post_data.get('name'),
+            keyword=post_data.get('keyword'),
+            group=post_data.get('group')
+            )
+        db.session.add(provider)
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return 'ERROR'
+    return 'OK'
+
+# API Providers
+@application.route("/providers/", methods=['PUT'])
+def editProvider():
+    if request.method == 'PUT':
+        post_data = request.get_json()
+        editprovider = db.session.query(Provider).filter_by(id= post_data.get('id')).first()
+        editprovider.name = post_data.get('name')
+        editprovider.keyword = post_data.get('keyword')
+        editprovider.group = post_data.get('group')
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return 'ERROR'
+    return 'OK'
+
+# API Providers
+@application.route("/providers/", methods=['DELETE'])
+def deleteProvider():
+    if request.method == 'DELETE':
+        provider_id = request.args.get('id')
+        db.session.query(Provider).filter_by(id= provider_id).delete()
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return 'ERROR'
+    return 'OK'
+
+
 if __name__ == '__main__':
     application.run(host='0.0.0.0', port=5000)
