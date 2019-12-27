@@ -118,14 +118,14 @@ def generar_excels(output_path):
         for subcat in list_subcat:
             product_subcat = product_cat[product_cat['subcategory'] == subcat]
             product_subcat = product_subcat.drop(columns=['category', 'subcategory', 'subsubcategory'])
-            if len(subcat) > 20:
-                subcat = subcat[:20]
 
             if subcat == '':
                 subcat = 'Sin subcategoria'
 
             print(subcat)
             subcat = strip_accents(subcat)
+            if len(subcat) > 20:
+                subcat = subcat[:20]
             ws = wb.create_sheet(title=subcat)
 
             # add header
