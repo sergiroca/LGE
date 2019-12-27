@@ -103,7 +103,6 @@ def generar_excels(output_path):
     list_cat = products['category'].unique()
     for category in list_cat:
         product_cat = products[products['category'] == category]
-
         pathdir = output_path + '/inv_' + strip_accents(category) + '.xlsx'
         if os.path.exists(pathdir):
             os.remove(pathdir)
@@ -125,6 +124,7 @@ def generar_excels(output_path):
             if subcat == '':
                 subcat = 'Sin subcategoria'
 
+            print(subcat)
             subcat = strip_accents(subcat)
             ws = wb.create_sheet(title=subcat)
 
