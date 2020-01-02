@@ -68,12 +68,13 @@ def get_provider_list (data_physical, data_online):
 def merge_provider_data (data_products, data_physical, data_online, provider_list, output_path):
     df_dict = {}
     for provider in provider_list:
-        #print provider
+        print provider
+        print '---------------------------'
         products = data_products[data_products['Proveedor'] == provider]
         products = products[['descripcion','Formato']]
 
-
         products_physical = data_physical[data_physical['Proveedor'].str.contains(provider)]
+        print products_physical
         products_physical = products_physical[['descripcion','cantidad']]
         products_online = data_online[data_online['Proveedor'].str.contains(provider)]
         products_online = products_online[['descripcion','cantidad']]
