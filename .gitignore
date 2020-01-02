@@ -126,3 +126,6 @@ yarn-error.log*
 *.sln
 *.pyc
 
+# database
+backend/application/test.db
+
