@@ -45,13 +45,13 @@ def add_formats(filepath, products):
 
 def add_provider_from_dict(products, providerFRESCO):
     products['Proveedor'] = ''
-    for item in providerFRESCO:
+    for index,item in providerFRESCO.iterrows():
         names = products['descripcion']
         names = names.str.lower()
         keyword = item.keyword
         keyword = keyword.lower()
         prodIdx = names.str.contains(keyword)
-        products['Proveedor'][prodIdx] = item.name
+        products['Proveedor'][prodIdx] = item['name']
     products = products[products['Proveedor'] != '']
     return products
 
@@ -70,15 +70,18 @@ def merge_provider_data (data_products, data_physical, data_online, provider_lis
     for provider in provider_list:
         print provider
         print '---------------------------'
-        products = data_products[data_products['Proveedor'] == provider]
+        provider = provider.encode('utf-8')
+        data_physical['Proveedor'] = data_physical['Proveedor'].str.encode('utf-8')
+        data_online['Proveedor'] = data_online['Proveedor'].str.encode('utf-8')
+        products = data_products[data_products['Proveedor'].str.encode('utf-8') == provider]
         products = products[['descripcion','Formato']]
 
         products_physical = data_physical[data_physical['Proveedor'].str.contains(provider)]
-        print products_physical
         products_physical = products_physical[['descripcion','cantidad']]
         products_online = data_online[data_online['Proveedor'].str.contains(provider)]
         products_online = products_online[['descripcion','cantidad']]
-
+        print products_online
+        print products_physical
 
         # strip products accents
         for i,row in products.iterrows():
@@ -138,6 +141,7 @@ def save_excel(pathdir,data,nameSheet):
     wb = load_workbook(filename = pathdir)
     if len(nameSheet) > 20:
         nameSheet = nameSheet[:20]
+    print nameSheet
     ws = wb.create_sheet(title=nameSheet)
         
     

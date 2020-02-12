@@ -5,6 +5,8 @@ from functions import *
 from application.models import *
 from application import db
 from sqlalchemy import or_
+import unicodedata
+import unidecode
 
 def app_pedidos_fresco(lunes,path):
 
@@ -23,15 +25,17 @@ def app_pedidos_fresco(lunes,path):
 
   # Provider paths
   # provider_list_FRESCO_1 = ['Bio Trailla -Finca la Noria', 'Biomilanes S.L.','Ecoeduco','La Vall de la Casella','Pidebio','FruitalpuntBio','PAMIES VITAE (Pamies Horticoles SL)','Finca Dos Castanos']
-  providerFRESCO1 = db.session.query(Provider).filter_by(group = 1).all()
+  providerFRESCO1 = db.session.query(Provider).filter_by(group = 1)
+  providerFRESCO1 = pd.read_sql(providerFRESCO1.statement, db.session.bind)
   provider_list_FRESCO_1 = []
-  for provider in providerFRESCO1:
-    provider_list_FRESCO_1.append(provider.name)
+  for index,provider in providerFRESCO1.iterrows():
+    provider_list_FRESCO_1.append(provider['name'])
   # provider_list_FRESCO_2 = ['Biobardales -Comercial Beldrea', 'Pollos Sanchonar','Suerte Ampanera C.B.','COOPERATIVA CRICA','El Cantero de Letur','Carnes Braman','Pedaque']
-  providerFRESCO2 = db.session.query(Provider).filter_by(group = 2).all()
+  providerFRESCO2 = db.session.query(Provider).filter_by(group = 2)
+  providerFRESCO2 = pd.read_sql(providerFRESCO2.statement, db.session.bind)
   provider_list_FRESCO_2 = []
-  for provider in providerFRESCO2:
-    provider_list_FRESCO_2.append(provider.name)
+  for index,provider in providerFRESCO2.iterrows():
+    provider_list_FRESCO_2.append(provider['name'])
 
   # provider_dict = {
   #   'Bio Trailla -Finca la Noria'         : 'trailla',
@@ -50,8 +54,9 @@ def app_pedidos_fresco(lunes,path):
   #   'Carnes Braman'                       : 'braman',
   #   'Pedaque'                             : 'pedaque'
   # }
-  providerFRESCO = db.session.query(Provider).filter(or_(Provider.group == 1, Provider.group == 2)).all()
-
+  providerFRESCO = db.session.query(Provider).filter(or_(Provider.group == 1, Provider.group == 2))
+  providerFRESCO = pd.read_sql(providerFRESCO.statement, db.session.bind)
+  
   products = read_productos(path_products)
   products = add_provider_from_dict(products, providerFRESCO)
   products = add_formats(path_formats, products)
