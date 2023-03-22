@@ -3,7 +3,7 @@ Flask-SQLAlchemy
 Flask-WTF
 Jinja2
 MarkupSafe
-PyMySQL
+PyMySQL==0.7.11
 SQLAlchemy
 WTForms
 Werkzeug
